@@ -154,6 +154,54 @@
     slots.forEach((s) => { if (s.active && s.cur.paused) s.kick(); });
   });
 
+  /* ---------- Teaser: quick cuts through the best shots, a short white flash at every cut.
+     Two video elements take turns: one is on screen while the other loads the next shot. ---------- */
+  const teaser = document.getElementById('teaser');
+  if (teaser) {
+    const SHOT_MS = 1500;
+    const shots = JSON.parse(teaser.dataset.shots).map((s) => ({ src: toUrl(s.src), at: +s.at || 0 }));
+    const [va, vb] = teaser.querySelectorAll('.teaser__shot');
+    const flash = teaser.querySelector('.teaser__flash');
+    let onScreen = null, waiting = va, next = 0, timer = 0, running = false;
+
+    // load a shot into a (hidden) video and park it on its start frame; resolves when ready to show
+    const prepare = (v, shot) => new Promise((resolve) => {
+      const park = () => {
+        v.currentTime = Math.min(shot.at, Math.max(0, (v.duration || 5) - SHOT_MS / 1000 - 0.1));
+        v.addEventListener('seeked', () => resolve(v), { once: true });
+      };
+      if (v.dataset.src === shot.src && v.readyState >= 1) park();
+      else {
+        v.dataset.src = shot.src;
+        v.src = shot.src;
+        v.addEventListener('loadedmetadata', park, { once: true });
+        v.load();
+      }
+    });
+
+    let ready = prepare(va, shots[0]);
+    const cut = async () => {
+      if (!running) return;
+      const v = await ready;                       // wait if the next shot is still loading
+      if (!running) return;
+      v.play().catch(() => {});
+      v.classList.remove('is-on'); void v.offsetWidth; v.classList.add('is-on');   // restart the push-in
+      if (onScreen) { onScreen.classList.remove('is-on'); onScreen.pause(); }
+      if (reduceMotion) { v.loop = true; return; } // no flashing cuts for reduced motion: loop the first shot
+      if (onScreen) { flash.classList.remove('is-flash'); void flash.offsetWidth; flash.classList.add('is-flash'); }
+      onScreen = v;
+      waiting = v === va ? vb : va;
+      next = (next + 1) % shots.length;
+      ready = prepare(waiting, shots[next]);       // load the following shot while this one plays
+      timer = setTimeout(cut, SHOT_MS);
+    };
+    // run only while the teaser is on screen
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !running) { running = true; if (onScreen) onScreen.play().catch(() => {}); timer = setTimeout(cut, onScreen ? SHOT_MS : 0); }
+      else if (!e.isIntersecting && running) { running = false; clearTimeout(timer); if (onScreen) onScreen.pause(); }
+    }).observe(teaser);
+  }
+
   /* ---------- Molecule (fallback without scroll animation): when in view, the video plays once,
      then iteration 3 fades in and stays. With scroll animation, see "Molecule: scroll-driven" below. ---------- */
   const mol = document.getElementById('molecule');
@@ -254,11 +302,26 @@
   });
   } // end player
 
+  /* ---------- Tools strip: write the list twice so the loop is seamless ---------- */
+  document.querySelectorAll('.tools__track').forEach((track) => {
+    if (reduceMotion) return;
+    [...track.children].forEach((li) => {
+      const copy = li.cloneNode(true);
+      copy.setAttribute('aria-hidden', 'true');
+      track.appendChild(copy);
+    });
+  });
+
   /* ---------- Nav state ---------- */
   const nav = document.getElementById('nav');
   const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 8);
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+  // No top bar while the teaser is on screen; it slides in once you scroll past it
+  if (teaser) {
+    new IntersectionObserver(([e]) => nav.classList.toggle('is-hidden', e.isIntersecting),
+      { rootMargin: `-${nav.offsetHeight || 56}px 0px 0px 0px` }).observe(teaser);
+  }
 
   if (!hasGsap || reduceMotion) {
     // Film chapters become plain stacked videos, so let them play like the rest
@@ -282,13 +345,16 @@
 
   if (document.getElementById('heroMedia')) {
   /* ---------- Hero: load-in ---------- */
-  const intro = gsap.timeline({ defaults: { ease: 'expo.out' } });
+  // With the teaser in front, the hero's intro plays when you reach it (and the top bar is handled
+  // by the teaser); without it, the intro plays on page load as before
+  const intro = gsap.timeline({ defaults: { ease: 'expo.out' }, paused: !!teaser });
   intro
     .from('.hero__eyebrow', { y: 14, opacity: 0, duration: 1.2 }, 0.1)
     .from('.hero__title .line > span', { yPercent: 110, duration: 1.6 }, 0.15)
     .from('.hero__lead .line > span', { yPercent: 110, duration: 1.4 }, 0.35)
-    .from('#heroMedia', { yPercent: 8, opacity: 0, duration: 1.8 }, 0.4)
-    .from('.nav', { yPercent: -100, duration: 1.2 }, 0.2);
+    .from('#heroMedia', { yPercent: 8, opacity: 0, duration: 1.8 }, 0.4);
+  if (teaser) ScrollTrigger.create({ trigger: '#hero', start: 'top 75%', once: true, onEnter: () => intro.play() });
+  else intro.from('.nav', { yPercent: -100, duration: 1.2 }, 0.2);
 
   /* ---------- Hero: scroll, card expands to full bleed ---------- */
   const media = document.getElementById('heroMedia');

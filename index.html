@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.13/dist/lenis.css">
-  <link rel="stylesheet" href="css/style.css?v=202610031429">
+  <link rel="stylesheet" href="css/style.css?v=202610032128">
 </head>
 <body>
 
@@ -41,6 +41,26 @@
   </header>
 
   <main id="top">
+
+    <!-- ===== Teaser: the very first screen. No top bar, no logo, just the name and quick flashes
+         of the best shots. "at" = where in the clip each shot starts (seconds). ===== -->
+    <section class="teaser" id="teaser" aria-label="Zeine Moualla, showreel"
+             data-shots='[
+               {"src":"media/p-grad-exterior-exterior-back-to-back-zm-27.mp4","at":0.6},
+               {"src":"media/p-vr-ex-large-vr-original-3-1.mp4","at":2.5},
+               {"src":"media/p-grad-exterior-facade-closup-options-zm-22.mp4","at":1.2},
+               {"src":"media/p-grad-exterior-facade-closup-options-zm-26.mp4","at":1.0},
+               {"src":"media/p-grad-interior-furniture-options-zm-29-7-3-v.mp4","at":1.2},
+               {"src":"media/p-grad-interior-furniture-options-zm-28-7-2-v-0000-1.mp4","at":1.0},
+               {"src":"media/p-grad-interior-furniture-options-zm-15.mp4","at":1.5},
+               {"src":"media/p-grad-interior-panel-options-zm-28-7-4-v-0000.mp4","at":1.0}
+             ]'>
+      <video class="teaser__shot" muted playsinline preload="auto" aria-hidden="true"></video>
+      <video class="teaser__shot" muted playsinline preload="auto" aria-hidden="true"></video>
+      <div class="teaser__flash" aria-hidden="true"></div>
+      <p class="teaser__name">Zeine Moualla</p>
+      <span class="teaser__cue" aria-hidden="true"></span>
+    </section>
 
     <!-- ===== 01 · Hero ===== -->
     <section class="hero" id="hero" aria-label="Introduction">
@@ -119,37 +139,6 @@
             <div><dt>Context</dt><dd>Academic project</dd></div>
             <div><dt>Tools</dt><dd>Rhino · Grasshopper · Unreal Engine</dd></div>
           </dl>
-        </div>
-      </div>
-    </section>
-
-    <!-- Concept: from sketch to refined solution -->
-    <section class="concept" aria-labelledby="conceptTitle">
-      <div class="concept__inner">
-        <div class="concept__head">
-          <h3 class="concept__title reveal" id="conceptTitle">From sketch<br>to system.</h3>
-          <p class="concept__text reveal">
-            Bold ideas explored through algorithmic workflows. Hand sketches set the gesture,
-            then Grasshopper and Rhino turn it into a precise, buildable surface.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- One full screen, pinned: sketches play back to back (slow zoom + drift right),
-         the refined solution strip sits on top and slides left -->
-    <section class="sketch" id="sketch" aria-label="From conceptual sketch to refined solution">
-      <div class="sketch__sticky">
-        <figure class="sketch__img"><img src="media/p-grad-concept-conceptual-sketch.png" alt="Conceptual sketch of the museum's fluid form"></figure>
-        <figure class="sketch__img"><img src="media/p-grad-concept-conceptual-sketch-1.png" alt="Conceptual study of the flowing volumes and façade"></figure>
-        <figure class="sketch__img"><img src="media/p-grad-concept-conceptual-sketch-3.png" alt="Conceptual sketch of the plan"></figure>
-        <div class="sketch__fade" aria-hidden="true"></div>
-
-        <div class="sketch__strip">
-          <div class="sketch__track">
-            <img src="media/p-grad-concept-web-refined-solution-loop.png" alt="Refined solution, elevations of the fluid shell">
-            <img src="media/p-grad-concept-web-refined-solution-loop.png" alt="" aria-hidden="true">
-          </div>
         </div>
       </div>
     </section>
@@ -519,7 +508,7 @@
       <div class="about__inner">
         <p class="eyebrow reveal"><span class="num">07</span>About</p>
         <h2 class="about__title reveal" id="aboutTitle">
-          Architect, 3D designer &amp; Unreal Engine developer.
+          Architect, computational designer &amp; Unreal Engine developer.
           <span>Based in Bali, collaborating with studios worldwide.</span>
         </h2>
 
@@ -571,10 +560,25 @@
             </ol>
 
             <h3 class="about__sub reveal">Tools</h3>
-            <ul class="chips reveal">
-              <li>Rhino</li><li>Grasshopper</li><li>Unreal Engine</li><li>VR development</li>
-              <li>3ds Max</li><li>V-Ray</li><li>Lumion</li><li>Photoshop</li><li>Premiere Pro</li>
-            </ul>
+            <!-- Tools strip: loops automatically; the list is written twice so the loop is seamless.
+                 Logos from Simple Icons (pinned version); own logos from the logo/ folder (logo/web/ = small icon versions); tools without a logo yet get a letter badge. -->
+            <div class="tools reveal" aria-label="Tools">
+              <ul class="tools__track">
+                <li class="tool"><img src="https://cdn.jsdelivr.net/npm/simple-icons@16.33.0/icons/rhinoceros.svg" alt="" width="22" height="22">Rhino</li>
+                <li class="tool"><img src="media/logo-web-grasshopper.png" alt="" width="22" height="22">Grasshopper</li>
+                <li class="tool"><img src="https://cdn.jsdelivr.net/npm/simple-icons@16.33.0/icons/unrealengine.svg" alt="" width="22" height="22">Unreal Engine</li>
+                <li class="tool"><img src="https://cdn.jsdelivr.net/npm/simple-icons@16.33.0/icons/meta.svg" alt="" width="22" height="22">VR development</li>
+                <li class="tool"><img src="media/logo-web-3dsmax.png" alt="" width="22" height="22">3ds Max</li>
+                <li class="tool"><img src="media/logo-web-vray.png" alt="" width="22" height="22">V-Ray</li>
+                <li class="tool"><img src="media/logo-web-lumion.png" alt="" width="22" height="22">Lumion</li>
+                <li class="tool"><span class="tool__badge">Ps</span>Photoshop</li>
+                <li class="tool"><span class="tool__badge">Pr</span>Premiere Pro</li>
+                <li class="tool"><img src="https://cdn.jsdelivr.net/npm/simple-icons@16.33.0/icons/claude.svg" alt="" width="22" height="22">Claude</li>
+                <li class="tool"><span class="tool__badge">Sd</span>Seedance</li>
+                <li class="tool"><img src="media/logo-web-magnific.png" alt="" width="22" height="22">Magnific AI</li>
+              </ul>
+            </div>
+
           </div>
         </div>
       </div>
@@ -592,6 +596,7 @@
         <div class="contact__links reveal">
           <a href="https://www.instagram.com/zeinemoualla/" target="_blank" rel="noopener">Instagram</a>
           <a href="https://www.youtube.com/@zeinemoualla9971" target="_blank" rel="noopener">YouTube</a>
+          <a href="https://www.linkedin.com/in/zeine-moualla-a50487420/" target="_blank" rel="noopener">LinkedIn</a>
         </div>
         <footer class="contact__foot">
           <span>© 2026 Zeine Moualla</span>
@@ -615,6 +620,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="js/main.js?v=202610031429"></script>
+  <script src="js/main.js?v=202610032128"></script>
 </body>
 </html>
