@@ -1,5 +1,5 @@
 /* =========================================================
-   Zeine Moualla — design system
+   Zeine Moualla · design system
    ========================================================= */
 :root {
   /* Palette */
@@ -53,6 +53,26 @@ img, video { display: block; max-width: 100%; }
   text-transform: uppercase;
   color: var(--grey-600);
   margin: 0;
+}
+
+/* ========== Slots: clips playing back to back in one frame ========== */
+.slot {
+  position: relative; overflow: hidden;
+  background: var(--sky-50);
+}
+.slot video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; z-index: 0;
+}
+.slot video.is-on {
+  opacity: 1; z-index: 2;
+  animation: slot-in .9s var(--ease-out) both;
+}
+.slot video.is-leaving { opacity: 1; z-index: 1; }   /* stays underneath while the next fades in */
+@keyframes slot-in {
+  from { opacity: 0; transform: scale(1.04); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 /* ========== Navigation ========== */
@@ -155,15 +175,12 @@ img, video { display: block; max-width: 100%; }
   clip-path: inset(var(--clip-top, 52vh) var(--clip-x, 7vw) var(--clip-bottom, 5vh) var(--clip-x, 7vw) round var(--clip-r, 28px));
   will-change: clip-path;
 }
-.hero__video {
-  width: 100%; height: 100%;
-  object-fit: cover;
+.hero__slot {
+  position: absolute; inset: 0;
   transform: scale(var(--vid-scale, 1.18));
   transform-origin: 50% 60%;
-  opacity: 0;
-  transition: opacity 1.2s var(--ease-out);
+  background: transparent;
 }
-.hero__video.is-ready { opacity: 1; }
 .hero__shade {
   position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(17,20,29,0) 45%, rgba(17,20,29,.55) 100%);
@@ -253,7 +270,7 @@ img, video { display: block; max-width: 100%; }
   padding: 0 .06em; margin: 0 -.06em;   /* keep glyph overhangs (the “f”) inside the gradient */
 }
 
-/* Principle — two-column statement under the manifesto */
+/* Principle · two-column statement under the manifesto */
 .principle {
   background: var(--white);
   padding: clamp(80px, 14vh, 160px) var(--gutter) clamp(100px, 16vh, 180px);
@@ -341,7 +358,7 @@ img, video { display: block; max-width: 100%; }
 .meta dt { color: var(--grey-400); }
 .meta dd { margin: 0; font-weight: 500; }
 
-/* Film — pinned chapters that wipe over one another */
+/* Film · pinned chapters that wipe over one another */
 .film {
   position: relative;
   height: 560vh;               /* ~1 screen of scroll per chapter */
@@ -359,8 +376,9 @@ img, video { display: block; max-width: 100%; }
   will-change: clip-path;
 }
 .film__panel:first-child { clip-path: inset(0 0 0 0); }
-.film__panel video {
-  width: 100%; height: 100%; object-fit: cover;
+.film__panel .slot {
+  position: absolute; inset: 0;
+  background: var(--navy);
   transform: scale(var(--s, 1.12));
   will-change: transform;
 }
@@ -420,7 +438,7 @@ img, video { display: block; max-width: 100%; }
   transform-origin: left; transform: scaleX(var(--f, 0));
 }
 
-/* Details — bento grid */
+/* Details · bento grid */
 .details {
   background: var(--white);
   padding: clamp(96px, 15vh, 170px) var(--gutter);
@@ -436,31 +454,41 @@ img, video { display: block; max-width: 100%; }
   font-size: clamp(36px, 4.4vw, 64px); letter-spacing: -0.04em; line-height: 1;
 }
 .details__sub { margin: 0; color: var(--grey-600); font-size: 17px; }
-.bento {
+/* All museum clips are 2.4:1, so the frames match them exactly (no cropping) */
+.details__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: clamp(180px, 19vw, 300px);
-  gap: clamp(10px, 1.2vw, 18px);
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(28px, 3vw, 44px) clamp(12px, 1.4vw, 20px);
 }
-.bento__item {
-  margin: 0; position: relative; overflow: hidden;
+.details__item { margin: 0; }
+.details__item--wide { grid-column: span 2; }
+.details__item .slot {
+  aspect-ratio: 12 / 5;
   border-radius: 22px;
-  background: var(--sky-50);
 }
-.bento__item--wide { grid-column: span 2; }
-.bento__item--tall { grid-row: span 2; }
-.bento__item video {
-  width: 100%; height: 100%; object-fit: cover;
-  opacity: 0;
-  transition: transform 1.2s var(--ease-out), opacity .9s var(--ease-out);
+.details__item figcaption {
+  margin-top: 12px;
+  font-size: 14px; color: var(--grey-600);
 }
-.bento__item video.is-ready { opacity: 1; }
-.bento__item:hover video { transform: scale(1.04); }
-/* 16:9 renders with black bars baked in — zoom past them */
-.bento__item--letterboxed video { transform: scale(1.32); }
-.bento__item--letterboxed:hover video { transform: scale(1.37); }
 
-/* Real-time — dark band */
+/* VR: clips play back to back */
+.realtime__vr {
+  margin-top: clamp(48px, 8vh, 88px);
+  display: grid; grid-template-columns: 4fr 8fr; gap: clamp(28px, 5vw, 80px);
+  align-items: center;
+}
+.realtime__lead {
+  margin: 0;
+  font-size: clamp(17px, 1.4vw, 20px); line-height: 1.6;
+  color: rgba(255,255,255,.75);
+}
+.realtime__video .slot {
+  aspect-ratio: 16 / 9;
+  border-radius: 22px;
+  background: rgba(255,255,255,.05);
+}
+
+/* Real-time · dark band */
 .realtime {
   background: var(--navy); color: var(--white);
   padding: clamp(110px, 17vh, 200px) var(--gutter);
@@ -505,14 +533,386 @@ img, video { display: block; max-width: 100%; }
   .realtime__grid { grid-template-columns: 1fr; }
   .rt-card h4 { margin-top: 28px; }
 }
+@media (max-width: 900px) {
+  .realtime__vr { grid-template-columns: 1fr; }
+}
 @media (max-width: 760px) {
   .details__head { flex-direction: column; gap: 8px; }
-  .bento { grid-template-columns: 1fr 1fr; grid-auto-rows: 38vw; }
-  .bento__item--wide { grid-column: span 2; }
-  .bento__item--tall { grid-row: span 1; }
-  .bento__item:last-child { grid-column: span 2; }
-  .bento__item { border-radius: 16px; }
+  .details__grid { grid-template-columns: 1fr; }
+  .details__item--wide { grid-column: auto; }
+  .details__item .slot { border-radius: 16px; }
   .film__progress { display: none; }
+}
+
+/* ========== Museum concept: sketch to refined solution ========== */
+.concept {
+  background: var(--white);
+  padding: clamp(40px, 6vh, 72px) var(--gutter) clamp(110px, 17vh, 190px);
+}
+.concept__inner { max-width: var(--max); margin: 0 auto; }
+.concept__head {
+  display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 6vw, 96px);
+  align-items: end;
+  margin-bottom: clamp(40px, 7vh, 72px);
+}
+.concept__title {
+  margin: 0;
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(36px, 4.4vw, 64px); letter-spacing: -0.04em; line-height: 1;
+}
+.concept__text { margin: 0; max-width: 32em; font-size: clamp(17px, 1.4vw, 20px); line-height: 1.55; color: var(--grey-600); }
+.concept { padding-bottom: clamp(32px, 5vh, 56px); }
+.concept__head { margin-bottom: 0; }
+
+/* Sketch to system: one full screen. Sketches fill the screen back to back (slow zoom, drift right);
+   the refined solution strip sits on top and slides left */
+.sketch { position: relative; height: 500vh; background: var(--white); }
+.sketch__sticky {
+  position: sticky; top: 0;
+  height: 100vh; height: 100svh;
+  overflow: hidden;
+}
+.sketch__img {
+  position: absolute; inset: 0; margin: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+.sketch__img:first-of-type { opacity: 1; }
+.sketch__img img {
+  width: 100%; height: 100%; max-width: none;
+  object-fit: cover; object-position: 50% 42%;
+  transform-origin: 50% 45%;
+  will-change: transform;
+}
+/* soft light ground at the bottom so the refined solution reads clearly on the sketch */
+.sketch__fade {
+  position: absolute; inset: auto 0 0 0; height: 58%; z-index: 1; pointer-events: none;
+  background: linear-gradient(0deg, rgba(247,246,241,.94) 0%, rgba(247,246,241,.75) 38%, rgba(247,246,241,0) 100%);
+}
+.sketch { --strip-h: clamp(150px, 31vh, 340px); }
+.sketch__strip {
+  position: absolute; z-index: 2; left: 0; right: 0; bottom: 0;   /* anchored to the very bottom of the screen */
+  overflow: visible;
+}
+.sketch__fade { opacity: 0; }
+/* starts just off the right edge; slides in from the side when the second sketch appears */
+.sketch__track { display: flex; width: max-content; will-change: transform; transform: translateX(100vw); }
+.sketch__track img {
+  display: block;
+  height: var(--strip-h); width: auto; max-width: none;
+}
+
+@media (max-width: 760px) {
+  .sketch { --strip-h: 20vh; }
+}
+
+/* ========== 04 · Concept work: generous white space, large type, small media ========== */
+.cw-intro {
+  background: var(--white);
+  padding: clamp(120px, 20vh, 220px) var(--gutter) clamp(40px, 6vh, 64px);
+}
+.cw-intro__inner, .int-intro__inner { max-width: var(--max); margin: 0 auto; }
+.cw-intro__title, .int-intro__title {
+  margin: 28px 0 0;
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(44px, 7vw, 112px); line-height: .96; letter-spacing: -0.05em;
+}
+.cw-intro__title span, .int-intro__title span { color: var(--grey-400); }
+.int-intro__title span { display: inline-block; margin-top: .2em; font-size: .42em; letter-spacing: -0.03em; line-height: 1.15; }
+
+.cw {
+  background: var(--white);
+  padding: clamp(120px, 22vh, 240px) var(--gutter);
+  border-top: 1px solid var(--line);
+}
+.cw__inner {
+  max-width: var(--max); margin: 0 auto;
+  display: grid; grid-template-columns: 5fr 7fr; gap: clamp(40px, 8vw, 140px);
+  align-items: center;
+}
+.cw__idx { display: block; font-size: 12px; letter-spacing: .14em; color: var(--sky-500); }
+.cw__name {
+  margin: 14px 0 clamp(28px, 4vh, 44px);
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(56px, 8vw, 128px); line-height: .92; letter-spacing: -0.055em;
+}
+.cw__text .meta > div { grid-template-columns: 90px 1fr; }
+.cw__media { display: flex; flex-direction: column; gap: clamp(28px, 4vh, 48px); align-items: flex-start; }
+.cw__row { display: flex; flex-wrap: nowrap; gap: clamp(12px, 1.4vw, 20px); align-items: flex-end; }
+.cw__row figure { margin: 0; }
+.cw__row figcaption { margin-top: 8px; font-size: 12px; color: var(--grey-400); letter-spacing: .04em; }
+.cw__row--images img { height: clamp(80px, 8.4vw, 140px); width: auto; border-radius: 10px; }
+.cw__clip .slot {
+  height: clamp(160px, 15.5vw, 250px);
+  aspect-ratio: 22 / 26;                  /* the concept clips are ~880×1040 */
+  border-radius: 14px;
+}
+.cw__clip--landscape .slot { aspect-ratio: 1340 / 684; height: clamp(160px, 17vw, 240px); }
+
+/* Molecule: one full screen, text on the media. The video plays once, then iteration 3 fades in. */
+.mol { position: relative; height: 100vh; height: 100svh; background: #cbcdd1; }   /* one constant background */
+.mol__sticky { position: relative; height: 100%; overflow: hidden; }
+/* scroll-driven version (set by main.js): the section holds while the scroll plays the video,
+   then fades in iteration 3; you can't pass it without seeing both */
+.mol.mol--scrub { height: 340vh; }
+.mol--scrub .mol__sticky { position: sticky; top: 0; height: 100vh; height: 100svh; }
+.mol--scrub .mol__frame--image, .mol--scrub .mol__frame img { transition: none; }
+.mol__frame { position: absolute; inset: 0; margin: 0; }
+.mol__frame--image {
+  opacity: 0;
+  transition: opacity 1.6s var(--ease-out);
+}
+.mol__frame--image.is-shown { opacity: 1; }
+/* the renders are tall: show them whole, below the top bar with a little air, right of centre,
+   with their edges feathered so they melt into the background */
+.mol__video, .mol__frame img {
+  position: absolute; top: calc(var(--nav-h) + 2.5vh); right: 12vw;
+  height: calc(100% - var(--nav-h) - 5vh); width: auto; max-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 16%, #000 84%, transparent 100%),
+                      linear-gradient(0deg, transparent 0%, #000 10%);
+  -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(90deg, transparent 0%, #000 16%, #000 84%, transparent 100%),
+                      linear-gradient(0deg, transparent 0%, #000 10%);
+          mask-composite: intersect;
+}
+.mol__video { aspect-ratio: 880 / 1044; }
+.mol__frame img {
+  aspect-ratio: 2380 / 3307;
+  /* the image's own background is a touch lighter and bluer than the video's: tone it to match,
+     so the screen colour does not change when it fades in */
+  filter: brightness(.935) saturate(.55);
+  transform: scale(1.03);
+  transition: transform 2.6s var(--ease-out);
+}
+.mol__frame--image.is-shown img { transform: scale(1); }
+/* soft light wash on the left so the text reads clearly on the media */
+.mol__shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, rgba(240, 241, 246, .82) 0%, rgba(240, 241, 246, .45) 34%, rgba(240, 241, 246, 0) 58%);
+}
+.mol__text {
+  position: absolute; z-index: 2;
+  left: var(--gutter); bottom: clamp(40px, 9vh, 96px);
+  width: min(440px, calc(100% - 2 * var(--gutter)));
+}
+.mol__name {
+  margin: 14px 0 clamp(24px, 4vh, 40px);
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(56px, 8vw, 128px); line-height: .92; letter-spacing: -0.055em;
+}
+.mol__text .meta { border-top-color: rgba(17, 20, 29, .16); }
+.mol__text .meta > div { grid-template-columns: 90px 1fr; border-bottom-color: rgba(17, 20, 29, .16); }
+.mol__text .meta dt { color: var(--grey-600); }
+
+@media (max-width: 760px) {
+  /* phones: centre the tower (the sides of the render are cropped) */
+  .mol__video { right: calc(50vw - 0.42 * (100svh - var(--nav-h) - 5vh)); }
+  .mol__frame img { right: calc(50vw - 0.36 * (100svh - var(--nav-h) - 5vh)); }
+  .mol__shade { background: linear-gradient(0deg, rgba(240, 241, 246, .92) 0%, rgba(240, 241, 246, .6) 40%, rgba(240, 241, 246, 0) 65%); }
+  .mol__text { bottom: 32px; }
+}
+
+/* Wave: one full screen in three vertical columns: text | clip 1 | clip 2.
+   The text column has its own clip as background. The scroll plays all three together. */
+.wave { position: relative; height: 100vh; height: 100svh; background: var(--navy); }
+.wave--scrub { height: 340vh; }
+.wave__sticky {
+  position: relative; height: 100%; overflow: hidden;
+  display: grid; grid-template-columns: 30fr 35fr 35fr; gap: 2px;
+  grid-template-rows: minmax(0, 1fr);       /* the row never grows taller than the screen */
+  padding-top: var(--nav-h);                /* columns start below the top bar */
+}
+.wave--scrub .wave__sticky { position: sticky; top: 0; height: 100vh; height: 100svh; }
+.wave__text {
+  position: relative; overflow: hidden; min-height: 0;
+  color: var(--white); background: #0b2a52;
+}
+.wave__clip--bg {                          /* the text column's background clip, filling the column */
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 35%;
+  -webkit-mask-image: none; mask-image: none;
+}
+.wave__text::after {                       /* soft dark shade so the white text stays readable */
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(0deg, rgba(8, 18, 36, .9) 0%, rgba(8, 18, 36, .62) 45%, rgba(8, 18, 36, .15) 100%);
+}
+.wave__textin {
+  position: absolute; z-index: 2; left: 0; right: 0; bottom: 0;
+  padding: 0 clamp(20px, 3vw, 48px) clamp(32px, 7vh, 88px) var(--gutter);
+}
+.wave__text .cw__idx { color: var(--sky-300); }
+.wave__name {
+  margin: 14px 0 clamp(20px, 3.5vh, 40px);
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(48px, 6vw, 112px); line-height: .92; letter-spacing: -0.055em;
+}
+.wave__text .meta { border-top-color: rgba(255, 255, 255, .22); }
+.wave__text .meta > div { grid-template-columns: 84px 1fr; border-bottom-color: rgba(255, 255, 255, .22); }
+.wave__text .meta dt { color: rgba(255, 255, 255, .65); }
+/* each clip column is filled with its clip's top-of-sky colour; the whole video frame is shown
+   (no zoom, nothing cropped), sitting on the bottom, with its top edge fading into the sky above */
+.wave__col { position: relative; overflow: hidden; min-height: 0; background: var(--sky, #022047); }
+.wave__col .wave__clip {
+  position: absolute; left: 0; bottom: 0;
+  width: 100%; height: auto; max-height: 100%; object-fit: contain; object-position: 50% 100%;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%);
+          mask-image: linear-gradient(180deg, transparent 0%, #000 16%);
+}
+/* progress through the section */
+.wave__progress { display: flex; margin-top: 24px; }
+.wave__progress i {
+  position: relative; display: block; width: 88px; height: 2px; border-radius: 2px;
+  background: rgba(255, 255, 255, .25); overflow: hidden;
+}
+.wave__progress i::after {
+  content: ""; position: absolute; inset: 0; background: var(--white);
+  transform-origin: left; transform: scaleX(var(--f, 0));
+}
+
+@media (max-width: 760px) {
+  /* phones: text on top, the two clips side by side below */
+  .wave__sticky { grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .wave__text { grid-column: 1 / -1; }
+  .wave__name { margin-bottom: 14px; }
+  .wave__text .meta > div { padding: 7px 0; }
+}
+
+/* Three Petals: one full screen, the video fills it, text on the left over the video */
+.petals {
+  position: relative; overflow: hidden;
+  height: 100vh; height: 100svh;
+  background: var(--navy);
+}
+.petals__video { position: absolute; inset: 0; background: var(--navy); }
+.petals__shade {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(10, 16, 26, .78) 0%, rgba(10, 16, 26, .45) 32%, rgba(10, 16, 26, 0) 58%),
+    linear-gradient(0deg, rgba(10, 16, 26, .45) 0%, rgba(10, 16, 26, 0) 35%);
+}
+.petals__text {
+  position: absolute; z-index: 4; color: var(--white);
+  left: var(--gutter); bottom: clamp(40px, 9vh, 96px);
+  width: min(440px, calc(100% - 2 * var(--gutter)));
+}
+.petals__text .cw__idx { color: var(--sky-300); }
+.petals__name {
+  margin: 14px 0 clamp(24px, 4vh, 40px);
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(52px, 7.4vw, 120px); line-height: .92; letter-spacing: -0.055em;
+}
+.petals__text .meta { border-top-color: rgba(255, 255, 255, .22); }
+.petals__text .meta > div { grid-template-columns: 90px 1fr; border-bottom-color: rgba(255, 255, 255, .22); }
+.petals__text .meta dt { color: rgba(255, 255, 255, .65); }
+
+@media (max-width: 760px) {
+  .petals__shade { background: linear-gradient(0deg, rgba(10, 16, 26, .85) 0%, rgba(10, 16, 26, .5) 45%, rgba(10, 16, 26, 0) 70%); }
+  .petals__text { bottom: 32px; }
+}
+
+/* Scroll sequence (data-seq): full-screen clips played back to back by the scroll, text on the left.
+   Used by Interiors A. */
+.seq { position: relative; height: 100vh; height: 100svh; background: var(--navy); }
+.seq--scrub { height: calc((var(--n, 3) * 95 + 60) * 1vh); }
+.seq__sticky { position: relative; height: 100%; overflow: hidden; }
+.seq--scrub .seq__sticky { position: sticky; top: 0; height: 100vh; height: 100svh; }
+.seq__clip {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 50%;
+  opacity: 0;
+}
+.seq__clip:first-of-type { opacity: 1; }
+.seq__shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(10, 12, 18, .8) 0%, rgba(10, 12, 18, .45) 32%, rgba(10, 12, 18, 0) 58%),
+    linear-gradient(0deg, rgba(10, 12, 18, .45) 0%, rgba(10, 12, 18, 0) 35%);
+}
+.seq__text {
+  position: absolute; z-index: 2; color: var(--white);
+  left: var(--gutter); bottom: clamp(40px, 9vh, 96px);
+  width: min(440px, calc(100% - 2 * var(--gutter)));
+}
+.seq__text .cw__idx { color: var(--sky-300); }
+.seq__name {
+  margin: 14px 0 clamp(24px, 4vh, 40px);
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(44px, 5.6vw, 96px); line-height: .95; letter-spacing: -0.05em;
+}
+/* the name of the clip that's playing (Hotel lobby, Multipurpose hall, ...), one line under the title */
+.seq__clipname {
+  position: relative; margin: 10px 0 0;
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(22px, 2.4vw, 38px); line-height: 1.15; letter-spacing: -0.025em;
+  color: var(--sky-300);
+}
+.seq__clipname span { display: block; }
+.seq__clipname span + span { position: absolute; left: 0; top: 0; opacity: 0; }
+.seq__details { overflow: hidden; }   /* collapses after the first clip so only the titles stay */
+.seq__name { margin-bottom: 0; }
+.seq__details > .meta { margin-top: clamp(24px, 4vh, 40px); }
+.seq__text .meta { border-top-color: rgba(255, 255, 255, .22); }
+.seq__text .meta > div { grid-template-columns: 90px 1fr; border-bottom-color: rgba(255, 255, 255, .22); }
+.seq__text .meta dt { color: rgba(255, 255, 255, .65); }
+/* which space is on screen + progress, one bar per clip */
+.seq__now { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; }
+.seq__label { font-size: 13px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--sky-300); }
+.seq__bars { display: flex; gap: 6px; }
+.seq__bars i {
+  position: relative; display: block; width: 22px; height: 2px; border-radius: 2px;
+  background: rgba(255, 255, 255, .25); overflow: hidden;
+}
+.seq__bars i::after {
+  content: ""; position: absolute; inset: 0; background: var(--white);
+  transform-origin: left; transform: scaleX(var(--f, 0));
+}
+
+@media (max-width: 760px) {
+  .seq__shade { background: linear-gradient(0deg, rgba(10, 12, 18, .88) 0%, rgba(10, 12, 18, .5) 50%, rgba(10, 12, 18, 0) 75%); }
+  .seq__text { bottom: 32px; }
+}
+
+/* ========== 05 · Interiors: each group fills one screen ========== */
+.int-intro {
+  background: var(--paper);
+  padding: clamp(120px, 20vh, 220px) var(--gutter) clamp(24px, 4vh, 48px);
+}
+.int {
+  background: var(--paper);
+  min-height: 100vh; min-height: 100svh;
+  padding: calc(var(--nav-h) + 32px) var(--gutter) 40px;
+  display: flex; align-items: center;
+}
+.int__inner {
+  width: 100%; max-width: var(--max); margin: 0 auto;
+  display: grid; gap: clamp(10px, 1.2vw, 16px);
+  height: min(calc(100svh - var(--nav-h) - 80px), 64vw);
+}
+.int--six .int__inner { grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr 1fr; }
+.int--four .int__inner { grid-template-columns: repeat(2, 1fr); grid-template-rows: 1fr 1fr; }
+.int--three .int__inner { grid-template-columns: 4fr 5fr 5fr; grid-template-rows: 1fr; height: min(calc(100svh - var(--nav-h) - 80px), 40vw); }
+.int__text { display: flex; flex-direction: column; justify-content: center; padding-right: clamp(8px, 2vw, 32px); }
+.int__text .meta > div { grid-template-columns: 80px 1fr; padding: 10px 0; font-size: 13px; }
+.int__name {
+  margin: 10px 0 24px;
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(32px, 3.6vw, 56px); line-height: .98; letter-spacing: -0.045em;
+}
+.int__clip { margin: 0; display: flex; flex-direction: column; min-height: 0; }
+.int__clip .slot { flex: 1; min-height: 0; border-radius: 16px; background: var(--sky-50); }
+.int__clip figcaption { margin-top: 8px; font-size: 13px; color: var(--grey-600); }
+
+@media (max-width: 900px) {
+  .concept__head, .cw__inner { grid-template-columns: 1fr; }
+  .int__inner, .int--three .int__inner { height: auto; grid-template-rows: none; }
+  .int--six .int__inner, .int--four .int__inner, .int--three .int__inner { grid-template-columns: 1fr 1fr; }
+  .int__text { grid-column: 1 / -1; padding: 0 0 12px; }
+  .int__clip .slot { flex: none; aspect-ratio: 4 / 3; }
+}
+@media (max-width: 600px) {
+  .int--six .int__inner, .int--four .int__inner, .int--three .int__inner { grid-template-columns: 1fr; }
+  .cw__row { flex-wrap: wrap; }
+  .cw__clip .slot { height: 220px; }
 }
 
 /* ========== 04 · Films (YouTube) ========== */
@@ -527,6 +927,23 @@ img, video { display: block; max-width: 100%; }
   font-size: clamp(44px, 7vw, 112px); line-height: .96; letter-spacing: -0.05em;
 }
 .films__title span { color: var(--grey-400); }
+.films__top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.channel-btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 12px 20px 12px 14px; border-radius: 999px;
+  background: var(--navy); color: var(--white);
+  font-size: 15px; font-weight: 500;
+  transition: transform .3s var(--ease-out), background .3s;
+}
+.channel-btn:hover { transform: scale(1.03); background: #000; }
+.channel-btn__icon {
+  position: relative; width: 30px; height: 21px; border-radius: 6px; background: #ff0033;
+}
+.channel-btn__icon::after {
+  content: ""; position: absolute; left: 50%; top: 50%; margin: -5px 0 0 -3px;
+  border-style: solid; border-width: 5px 0 5px 8px;
+  border-color: transparent transparent transparent #fff;
+}
 .films__group { margin-top: clamp(64px, 11vh, 120px); }
 .films__label {
   display: flex; align-items: baseline; justify-content: space-between; gap: 24px;
@@ -653,49 +1070,57 @@ img, video { display: block; max-width: 100%; }
 }
 
 /* ========== Contact ========== */
+/* The personal artwork "Fluidity" plays at full brightness behind the text (no darkening).
+   The artwork is light, so the text is white, with a soft shadow for legibility. */
 .contact {
   position: relative; overflow: hidden;
-  background: var(--navy); color: var(--white);
+  background: #c9c6c0; color: var(--white);
+  text-shadow: 0 1px 14px rgba(17, 20, 29, .35), 0 0 2px rgba(17, 20, 29, .25);   /* keeps white text readable on the light artwork, without darkening it */
   padding: clamp(120px, 20vh, 220px) var(--gutter) 32px;
 }
-.contact::before {
-  content: ""; position: absolute;
-  width: 80vw; height: 80vw; left: -25vw; bottom: -45vw;
-  background: radial-gradient(closest-side, rgba(111,178,227,.2), rgba(111,178,227,0));
-  pointer-events: none;
-}
-.contact__inner { position: relative; max-width: var(--max); margin: 0 auto; }
+.contact__art { position: absolute; inset: 0; z-index: 0; }
+.contact__art .slot { position: absolute; inset: 0; background: transparent; }
+.contact__credit em { font-style: italic; }
+.contact__inner { position: relative; z-index: 1; max-width: var(--max); margin: 0 auto; }
+.contact .eyebrow--light { color: var(--white); }
 .contact__title {
   margin: 24px 0 0;
   font-family: var(--font-display); font-weight: 600;
   font-size: clamp(44px, 7.4vw, 120px); line-height: .96; letter-spacing: -0.05em;
 }
-.contact__title span { color: var(--sky-300); }
+.contact__title {                    /* "Let's shape something" in see-through white: the artwork shows through */
+  color: rgba(255, 255, 255, .55);
+  text-shadow: none;                 /* a shadow would show through the translucent letters */
+}
+.contact__title span {               /* "daring together." in solid white, with the soft shadow */
+  color: var(--white);
+  text-shadow: 0 1px 14px rgba(17, 20, 29, .35), 0 0 2px rgba(17, 20, 29, .25);
+}
 .contact__mail {
   display: inline-flex; align-items: center; gap: 14px;
   margin-top: clamp(48px, 8vh, 80px);
   font-family: var(--font-display); font-weight: 500;
   font-size: clamp(22px, 3vw, 44px); letter-spacing: -0.03em;
-  border-bottom: 1px solid rgba(255,255,255,.25);
+  border-bottom: 1px solid rgba(255,255,255,.6);
   padding-bottom: 6px;
   transition: border-color .3s, color .3s;
 }
 .contact__mail span { font-size: .7em; transition: transform .4s var(--ease-out); }
-.contact__mail:hover { color: var(--sky-300); border-color: var(--sky-300); }
+.contact__mail:hover { color: #2c5a88; border-color: #2c5a88; }
 .contact__mail:hover span { transform: translate(4px, -4px); }
 .contact__links { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
 .contact__links a {
   padding: 10px 20px; border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.2);
-  font-size: 14px;
-  transition: background .3s, border-color .3s;
+  border: 1px solid rgba(255,255,255,.65);
+  font-size: 14px; font-weight: 500;
+  transition: background .3s, border-color .3s, color .3s;
 }
-.contact__links a:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.4); }
+.contact__links a:hover { background: var(--white); border-color: var(--white); color: var(--navy); text-shadow: none; }
 .contact__foot {
   margin-top: clamp(100px, 18vh, 200px);
-  padding-top: 24px; border-top: 1px solid rgba(255,255,255,.1);
+  padding-top: 24px; border-top: 1px solid rgba(255,255,255,.45);
   display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-  font-size: 13px; color: rgba(255,255,255,.5);
+  font-size: 13px; color: var(--white);
 }
 
 @media (max-width: 900px) {
@@ -712,6 +1137,37 @@ img, video { display: block; max-width: 100%; }
   .cv__place { text-align: left; }
 }
 
+/* ========== YouTube player (full screen, Esc or ✕ to return) ========== */
+.player {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; flex-direction: column;
+  background: #000;
+}
+.player[hidden] { display: none; }
+.player__bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 12px clamp(12px, 2vw, 24px);
+  color: var(--white);
+}
+.player__channel {
+  font-size: 14px; font-weight: 500;
+  padding: 8px 16px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.25);
+  transition: background .3s;
+}
+.player__channel:hover { background: rgba(255,255,255,.1); }
+.player__close {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 0; cursor: pointer;
+  background: rgba(255,255,255,.12); color: var(--white);
+  font-size: 18px;
+  transition: background .3s;
+}
+.player__close:hover { background: rgba(255,255,255,.25); }
+.player__stage { position: relative; flex: 1; }
+.player__stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+html.player-open { overflow: hidden; }
+
 /* Generic fade-up reveal */
 .reveal { will-change: transform, opacity; }
 
@@ -725,4 +1181,8 @@ img, video { display: block; max-width: 100%; }
   .film__sticky { position: relative; height: auto; }
   .film__panel { position: relative; height: 100vh; clip-path: none; }
   .film__captions, .film__progress, .film__shade { display: none; }
+  .sketch { height: auto; }
+  .sketch__sticky { position: relative; }
+  .sketch__fade { opacity: 1; }
+  .sketch__track { transform: none; }
 }
