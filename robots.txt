@@ -1,0 +1,5 @@
+# zeinemoualla.com: everyone, search engines and AI assistants included, may read the whole site
+User-agent: *
+Allow: /
+
+Sitemap: https://zeinemoualla.com/sitemap.xml

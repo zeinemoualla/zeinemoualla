@@ -282,6 +282,8 @@
   try { start = localStorage.getItem('zm-lang') || 'en'; } catch (e) { /* ignore */ }
   const fromUrl = new URLSearchParams(location.search).get('lang');
   if (fromUrl === 'fr' || fromUrl === 'en') start = fromUrl;
+  // the French address is its own page for Google: point its "main address" at itself
+  if (fromUrl === 'fr') document.querySelector('link[rel="canonical"]')?.setAttribute('href', 'https://zeinemoualla.com/?lang=fr');
 
   if (start === 'fr') translate('fr');                   // before main.js builds its animations
   // run once more after main.js, to cover text it creates (clip titles, the doubled tools strip)

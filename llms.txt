@@ -1,0 +1,36 @@
+# Zeine Moualla
+
+> Architect and computational designer based in Bali, Indonesia, working with studios worldwide. Complex geometry, parametric systems (Rhino/Grasshopper) and real-time visualization in Unreal Engine for avant-garde architecture.
+
+Website: https://zeinemoualla.com/ (English) and https://zeinemoualla.com/?lang=fr (French)
+Contact: zeinemoualla@gmail.com
+Languages: English, French, Arabic
+
+## What he does
+
+- Computational and parametric design: form-finding with Rhino and Grasshopper, from fluid concepts to coherent, buildable digital systems
+- Architectural visualization: photorealistic exterior and interior renderings and animations (3ds Max, V-Ray)
+- Real-time and VR: interactive Unreal Engine walkthroughs (first-person, third-person, VR) with live switching of design options and materials
+- Works as a co-creator with architects, on façades, interiors and furniture, from residential villas to cultural centers and museums
+
+## Experience
+
+- Private tutor, parametric design and visualization (Unreal Engine, Rhino, Grasshopper), 2023 to now, remote; 30+ students mentored
+- 3D Computational Designer and Architectural Visualizer, MDL (Mercurio Design Lab), Singapore, 2020 to 2022
+- 3D Modeler (freelance), Engage Works, London, 2020: VR-ready model of the Bee'ah Headquarters by Zaha Hadid Architects
+- Junior Architect and Architectural Visualizer, PCH Décor, Sharjah (UAE), 2016 to 2019
+- Education: Bachelor of Architecture, Damascus University, Faculty of Architecture
+
+## Selected work (on the website)
+
+- Museum of Contemporary Art: academic graduation project, a museum conceived as one continuous fluid form, designed parametrically and explored in real time and VR in Unreal Engine
+- Concept explorations at MDL Singapore: Molecule (mixed use), Wave (mixed use), Three Petals (cultural center)
+- Interiors at MDL Singapore: hotel lobby, multipurpose hall, rooftop restaurant, hotel bedroom
+
+## Profiles
+
+- LinkedIn: https://www.linkedin.com/in/zeine-moualla-a50487420/
+- Behance: https://www.behance.net/zeinemoualc033
+- Instagram: https://www.instagram.com/zeinemoualla/
+- ArtStation: https://www.artstation.com/zeine
+- YouTube: https://www.youtube.com/@zeinemoualla9971
