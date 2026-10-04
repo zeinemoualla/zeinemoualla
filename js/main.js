@@ -65,7 +65,7 @@
         });
       }
       this.vids.forEach((v) => v.addEventListener('playing', () => el.classList.add('is-ready'), { once: true }));
-      if (el.hasAttribute('data-eager')) this.warm();
+      // nothing downloads here: the loading queue (below) or the visitor reaching the section starts it
     }
     setSrc(v, src) {
       if (v.dataset.src === src) return;
@@ -157,6 +157,13 @@
   /* ---------- Teaser: quick cuts through the best shots, a short white flash at every cut.
      Two video elements take turns: one is on screen while the other loads the next shot. ---------- */
   const teaser = document.getElementById('teaser');
+  // the rest of the page waits for this: the teaser has shown every shot once, or the visitor scrolled past it
+  let teaserIsDone = !teaser;
+  const teaserDone = () => {
+    if (teaserIsDone) return;
+    teaserIsDone = true;
+    document.dispatchEvent(new Event('zm:teaser-done'));
+  };
   if (teaser) {
     const SHOT_MS = 1500;
     const shots = JSON.parse(teaser.dataset.shots).map((s) => ({ src: toUrl(s.src), at: +s.at || 0 }));
@@ -187,20 +194,73 @@
       v.play().catch(() => {});
       v.classList.remove('is-on'); void v.offsetWidth; v.classList.add('is-on');   // restart the push-in
       if (onScreen) { onScreen.classList.remove('is-on'); onScreen.pause(); }
-      if (reduceMotion) { v.loop = true; return; } // no flashing cuts for reduced motion: loop the first shot
+      if (reduceMotion) { v.loop = true; teaserDone(); return; } // no flashing cuts for reduced motion: loop the first shot
       if (onScreen) { flash.classList.remove('is-flash'); void flash.offsetWidth; flash.classList.add('is-flash'); }
       onScreen = v;
       waiting = v === va ? vb : va;
       next = (next + 1) % shots.length;
+      if (next === 0) teaserDone();               // every shot has been shown once
       ready = prepare(waiting, shots[next]);       // load the following shot while this one plays
       timer = setTimeout(cut, SHOT_MS);
     };
-    // run only while the teaser is on screen
+    // run only while the teaser is on screen (leaving it also lets the rest of the page start loading)
     new IntersectionObserver(([e]) => {
       if (e.isIntersecting && !running) { running = true; if (onScreen) onScreen.play().catch(() => {}); timer = setTimeout(cut, onScreen ? SHOT_MS : 0); }
-      else if (!e.isIntersecting && running) { running = false; clearTimeout(timer); if (onScreen) onScreen.pause(); }
+      else if (!e.isIntersecting && running) { running = false; clearTimeout(timer); if (onScreen) onScreen.pause(); teaserDone(); }
     }).observe(teaser);
   }
+
+  /* ---------- Loading order: teaser first, then one section at a time, in page order ----------
+     No video outside the teaser downloads when the page opens. Once the teaser is done (every shot
+     shown once, or the visitor scrolled past it), each section's videos are loaded in turn, and the
+     next section starts only when the previous one has finished. A section the visitor reaches
+     early starts loading on its own (playing or scrolling a video always loads it). */
+  const SECTION_TIMEOUT = 25000;   // never let one slow file hold up the rest for longer than this
+
+  // resolves when a video is fully downloaded, the browser has buffered all it intends to, or it failed
+  const loaded = (v) => new Promise((resolve) => {
+    const stop = new AbortController();
+    const finish = () => { stop.abort(); clearTimeout(timer); resolve(); };
+    const check = () => {
+      if (v.error) return finish();
+      const d = v.duration, b = v.buffered;
+      if (d && b.length && b.end(b.length - 1) >= d - 0.2) finish();
+    };
+    const opts = { signal: stop.signal };
+    v.addEventListener('progress', check, opts);
+    v.addEventListener('canplaythrough', check, opts);
+    v.addEventListener('suspend', () => { if (v.readyState >= 3) finish(); }, opts);   // browser decided it has enough
+    v.addEventListener('error', finish, opts);
+    const timer = setTimeout(finish, SECTION_TIMEOUT);
+    check();
+  });
+
+  // start a section's videos downloading and return them
+  const startSection = (sec) => {
+    const vids = new Set();
+    sec.querySelectorAll('.slot[data-playlist]').forEach((el) => {
+      const s = slotOf(el);
+      if (!s) return;
+      s.warm();                                    // first clip; the frame fetches its next clip itself while playing
+      vids.add(s.cur);
+    });
+    sec.querySelectorAll('video[src]').forEach((v) => {
+      if (v.preload !== 'auto') v.preload = 'auto';
+      if (v.readyState === 0 && v.paused) v.load();
+      vids.add(v);
+    });
+    return [...vids];
+  };
+
+  const runQueue = async () => {
+    for (const sec of document.querySelectorAll('main > section')) {
+      if (sec === teaser) continue;
+      const vids = startSection(sec);
+      if (vids.length) await Promise.all(vids.map(loaded));
+    }
+  };
+  if (teaserIsDone) runQueue();
+  else document.addEventListener('zm:teaser-done', runQueue, { once: true });
 
   /* ---------- Molecule (fallback without scroll animation): when in view, the video plays once,
      then iteration 3 fades in and stays. With scroll animation, see "Molecule: scroll-driven" below. ---------- */
