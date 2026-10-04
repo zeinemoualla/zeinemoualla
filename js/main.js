@@ -302,6 +302,32 @@
   });
   } // end player
 
+  /* ---------- Visitor statistics: record which sections each visit reaches (GoatCounter events).
+     The site is one long page, so this shows how far people get. Sent once per section per visit;
+     does nothing on localhost or if GoatCounter is blocked. ---------- */
+  const SECTION_NAMES = {
+    teaser: 'Teaser', hero: 'Hero', manifesto: 'Manifesto', work: 'Museum of Contemporary Art',
+    molecule: 'Molecule', wave: 'Wave', petals: 'Three Petals', 'interiors-a': 'Interiors',
+    'interiors-b': 'Hotel lobby', 'interiors-c': 'Hotel bedroom', films: 'Films', about: 'About', contact: 'Contact',
+  };
+  if (!/^(localhost|127\.)/.test(location.hostname)) {
+    const seen = new Set();
+    const send = (id, tries = 0) => {
+      if (seen.has(id)) return;
+      if (!window.goatcounter || !window.goatcounter.count) {      // counter script still loading: try again shortly
+        if (tries < 20) setTimeout(() => send(id, tries + 1), 500);
+        return;
+      }
+      seen.add(id);
+      window.goatcounter.count({ path: `section/${id}`, title: SECTION_NAMES[id], event: true });
+    };
+    // a section counts as "reached" once it crosses the middle of the screen (works for tall, pinned sections too)
+    const sio = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) send(e.target.id); });
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    Object.keys(SECTION_NAMES).forEach((id) => { const el = document.getElementById(id); if (el) sio.observe(el); });
+  }
+
   /* ---------- Tools strip: write the list twice so the loop is seamless ---------- */
   document.querySelectorAll('.tools__track').forEach((track) => {
     if (reduceMotion) return;
@@ -406,7 +432,8 @@
   } // end hero
 
   /* ---------- Manifesto: words light up as you scroll ---------- */
-  document.querySelectorAll('[data-words]').forEach((el) => {
+  // Split a block of text into one span per word (kept as a function so the language switch can re-split)
+  const splitWords = (el) => {
     const words = [];
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
     const textNodes = [];
@@ -424,9 +451,15 @@
       });
       node.replaceWith(frag);
     });
+    return words;
+  };
 
+  document.querySelectorAll('[data-words]').forEach((el) => {
+    let words = splitWords(el);
+    let progress = 0;
     const section = el.closest('section');
     const paint = (p) => {
+      progress = p;
       const lit = p * (words.length + 4);       // a few words of "glow" ahead
       words.forEach((w, i) => {
         const o = Math.min(1, Math.max(0.14, (lit - i) / 4));
@@ -441,6 +474,8 @@
       scrub: true,
       onUpdate: (self) => paint(self.progress),
     });
+    // used by the language switch (js/i18n.js): swap the text, re-split, keep the current glow
+    el.zmSetText = (html) => { el.innerHTML = html; words = splitWords(el); paint(progress); };
   });
 
   /* ---------- Sketch to system: full-screen sketches back to back, refined strip slides left on top ---------- */
