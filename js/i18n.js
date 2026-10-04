@@ -192,6 +192,7 @@
     'Play: Virtual-reality exploration in Unreal Engine': 'Lire : exploration en réalité virtuelle dans Unreal Engine',
     'Play: First-person exploration in Unreal Engine': 'Lire : exploration à la première personne dans Unreal Engine',
     'Play: Third-person exploration in Unreal Engine': 'Lire : exploration à la troisième personne dans Unreal Engine',
+    'CV (PDF), opens in a new tab': 'CV (PDF), s’ouvre dans un nouvel onglet',
     'Video player': 'Lecteur vidéo',
     'Close video': 'Fermer la vidéo',
   };
