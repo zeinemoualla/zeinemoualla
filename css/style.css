@@ -158,6 +158,10 @@ img, video { display: block; max-width: 100%; }
   .lang__short { display: inline; }
   .lang button { padding: 0 10px; }
 }
+/* small laptops / tablets: the "Contact" link already goes where "Let's talk" goes, so the button steps aside */
+@media (min-width: 761px) and (max-width: 880px) {
+  .nav__cta { display: none; }
+}
 @media (max-width: 760px) {
   .nav__links { display: none; }
 }
@@ -1262,7 +1266,18 @@ img, video { display: block; max-width: 100%; }
 .contact__mail span { font-size: .7em; transition: transform .4s var(--ease-out); }
 .contact__mail:hover { color: #2c5a88; border-color: #2c5a88; }
 .contact__mail:hover span { transform: translate(4px, -4px); }
-.contact__links { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+.contact__mail--phone { display: flex; width: max-content; max-width: 100%; margin-top: 18px; }   /* the phone number sits right under the email, same size */
+.contact__links { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.contact__links a.wa-btn {           /* WhatsApp: the one solid button in the row */
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 22px 10px 16px;
+  background: var(--white); border-color: var(--white); color: var(--navy);
+  font-weight: 600; text-shadow: none;
+  box-shadow: 0 8px 24px rgba(17, 20, 29, .16);
+}
+.wa-btn__icon { color: #25d366; flex: none; transition: color .3s; }
+.contact__links a.wa-btn:hover { background: var(--navy); border-color: var(--navy); color: var(--white); }
+.contact__links a.wa-btn:hover .wa-btn__icon { color: #25d366; }
 .contact__links a {
   padding: 10px 20px; border-radius: 999px;
   border: 1px solid rgba(255,255,255,.65);

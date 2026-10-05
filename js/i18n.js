@@ -167,6 +167,7 @@
     // Contact
     'Let’s shape something': 'Façonnons ensemble',
     'daring together.': 'quelque chose d’audacieux.',
+    'Chat on WhatsApp': 'Écrire sur WhatsApp',
     'Background:': `Arrière-plan${NB}:`,
     'Fluidity': 'Fluidité',
     ', personal artwork': ', œuvre personnelle',
@@ -193,6 +194,8 @@
     'Play: First-person exploration in Unreal Engine': 'Lire : exploration à la première personne dans Unreal Engine',
     'Play: Third-person exploration in Unreal Engine': 'Lire : exploration à la troisième personne dans Unreal Engine',
     'CV (PDF), opens in a new tab': 'CV (PDF), s’ouvre dans un nouvel onglet',
+    'Call +62 811 1660 3210': 'Appeler le +62 811 1660 3210',
+    'Start a WhatsApp conversation, opens in a new tab': 'Démarrer une conversation WhatsApp, s’ouvre dans un nouvel onglet',
     'Video player': 'Lecteur vidéo',
     'Close video': 'Fermer la vidéo',
   };
